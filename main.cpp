@@ -5,17 +5,23 @@
 using namespace std;
 // g++ main.cpp -lfreeglut -lopengl32 -lglu32 -lgdi32
 float cameraX = 0.0f, cameraY = 0.0f, cameraZ = 5.0f;
-int bicyclePosX = 0.0f , bicyclePosY = 0.0f;
-bool isOpen = false;
+bool isOpen = false, change = false;
 bool isOpenW = false;
-bool Forward = false;
-bool Backward = false;
-bool rottate = false;
-float radius = 2.0;
-float angle = 360.0;
+bool isRotateBike = false;
+bool changed = false;
+float radius = 2.5;
+float angle = 0.0;
+float bicyclePosX = 0.0f;
+float bicyclePosY = 0.0f;
+float bicyclePosZ = 1.3f;
+bool isLeftButtonPressed = false, isRightButtonPressed = false;
+
+
+// Define variables to store the rotation angles of the wheels
+float rightWheelAngle = 0.0f;
+float leftWheelAngle = 0.0f;
 
 #define  PI   3.14159
-
 
 void changeSize(int w, int h) {
     if (h == 0)
@@ -229,23 +235,39 @@ void DrawBuilding(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[],
 }
 
 void bicycle() {
+//    glPushMatrix(); // Right Wheel
+//    glColor3f(0, 0, 0);
+//    glTranslated(0.23, -0.7, 1.3);
+//    glRotated(angle, 0, 0, 1);
+//    glutSolidTorus(0.02, 0.08, 20, 20);
+//    glPopMatrix();
+//
+//    glPushMatrix(); // Left Wheel
+//    glColor3f(0, 0, 0);
+//    glTranslated(-0.22, -0.7, 1.3);
+//    glRotated(angle, 0, 0, 1);
+//    glutSolidTorus(0.02, 0.08, 20, 20);
+//    glPopMatrix();
+
     glPushMatrix(); // Right Wheel
     glColor3f(0, 0, 0);
-    glTranslated(-0.3, -0.7, -0.5);
-    glRotated(angle, 0, 0, 1);
+    glTranslated(0.23, -0.7, 1.3);
+//    glRotated(angle, 0, 0, 1); // Rotate the wheel along with the bicycle
+    glRotated(rightWheelAngle, 0, 1, 0); // Rotate the right wheel
     glutSolidTorus(0.02, 0.08, 20, 20);
     glPopMatrix();
 
     glPushMatrix(); // Left Wheel
     glColor3f(0, 0, 0);
-    glTranslated(-0.75, -0.7, -0.5);
-    glRotated(angle, 0, 0, 1);
+    glTranslated(-0.22, -0.7, 1.3);
+//    glRotated(angle, 0, 0, 1); // Rotate the wheel along with the bicycle
+    glRotated(leftWheelAngle, 0, 1, 0); // Rotate the left wheel
     glutSolidTorus(0.02, 0.08, 20, 20);
     glPopMatrix();
 
     glPushMatrix(); // Bicycle bottom horizontal pipe o---o
     glColor3f(0.439f, 0.333f, 0.259f);
-    glTranslated(-0.52, -0.69, -0.5);
+    glTranslated(-0.012, -0.69, 1.3);
     glScaled(0.31, 0.02, 0.03);
     glutSolidCube(1);
     glColor3f(0.439f, 0.333f, 0.259f);
@@ -254,7 +276,7 @@ void bicycle() {
 
     glPushMatrix(); //bicycle top horizontal pipe
     glColor3f(0.439f, 0.333f, 0.259f);
-    glTranslated(-0.52, -0.5, -0.5);
+    glTranslated(-0.02, -0.5, 1.3);
     glScaled(0.3, 0.03, 0.1);
     glutSolidCube(1);
     glColor3f(0.439f, 0.333f, 0.259f);
@@ -263,7 +285,7 @@ void bicycle() {
 
     glPushMatrix(); //bicycle vertical pipes supportive cube + seat
     glColor3f(0.439f, 0.333f, 0.259f);
-    glTranslated(-0.57, -0.54, -0.5);
+    glTranslated(-0.06, -0.54, 1.3);
     glScaled(0.035, 0.3, 0.05);
     glutSolidCube(1);
     glColor3f(0.439f, 0.333f, 0.259f);
@@ -273,7 +295,7 @@ void bicycle() {
     // vertical handle
     glPushMatrix();
     glColor3f(0, 0, 0);
-    glTranslated(-0.4, -0.53, -0.5);
+    glTranslated(0.12, -0.53, 1.3);
     glScaled(0.02, 0.3, 0.03);
     glutSolidCube(1);
     glColor3f(0, 0, 0);
@@ -282,7 +304,7 @@ void bicycle() {
     // horizontal handle
     glPushMatrix();
     glColor3f(0, 0, 0);
-    glTranslated(-0.4, -0.39, -0.5);
+    glTranslated(0.118, -0.39, 1.3);
     glScaled(0.02, 0.02, 0.2);
     glutSolidCube(1);
     glColor3f(0, 0, 0);
@@ -291,7 +313,7 @@ void bicycle() {
 
     glPushMatrix(); //paddle
     glColor3f(0, 0, 0);
-    glTranslated(-0.475, -0.685, -0.52);
+    glTranslated(0.06, -0.685, 1.3);
     glScaled(0.03, 0.02, 0.26);
     glutSolidCube(1);
     glColor3f(0, 0, 0);
@@ -300,53 +322,30 @@ void bicycle() {
 }
 
 void update(int value) {
-    if (rottate) {
-        angle -= 1.0; // Decrease the angle to rotate clockwise
-        if (angle < 0) {
-            angle += 360; // Keep angle within [0, 360] range
+    if (isRotateBike) {
+        angle += 1.0;
+        if (angle >= 360) {
+            angle -= 360;
         }
-        float radians = angle * PI / 180.0;
-        bicyclePosX = radius * cos(angle); // Update bicycle position based on angle
-        bicyclePosY = radius * sin(angle);
+        float radians = angle * (PI / 180); // Convert angle to radians
+        bicyclePosX = radius * cos(radians);
+        bicyclePosY = radius * sin(radians);
     }
-    glutPostRedisplay(); // Request redisplay to update the scene
-    glutTimerFunc(16,update, 0); // Start the update loop// 60 frames per second
+    glutPostRedisplay();
+    glutTimerFunc(16, update, 0);
 }
-
 
 void DrawBicycle() {
     glPushMatrix();
-    // Translate the bicycle to the center of the building
-    glTranslatef(0.0f, 0.0f, 0.5f);
-    // Rotate the bicycle around the y-axis
-    glRotatef(angle, 0.0f, 1.0f, 0.0f);
-    // Translate the bicycle back to its original position
-    glTranslatef(0.5f, 0.0f, -3.0f);
-    // Draw the bicycle
+    if(change){
+        change = false;
+        glTranslatef(bicyclePosX, 0.0, bicyclePosY); // Translate to the correct position
+    }
+    glRotatef(angle, 0.0f, 1.0f, 0.0f); // Rotate around the z-axis
     bicycle();
     glPopMatrix();
 }
 
-
-
-void DrawNoor(){
-    glPushMatrix(); //bicycle handle
-    glColor3f(0, 0, 0);
-    glTranslated(0.6, 0.2, 0);
-    glScaled(0.06, 1.2, 0);
-    glutSolidCube(1);
-    glColor3f(0, 0, 0);
-    glutWireCube(1);
-    glPopMatrix();
-    glPushMatrix();
-    glColor3f(0, 0, 0);
-    glTranslated(0.6, 0.8, 0);
-    glScaled(0.06, 0, 1);
-    glutSolidCube(1);
-    glColor3f(0, 0, 0);
-    glutWireCube(1);
-    glPopMatrix();
-};
 
 void renderScene() {
     GLfloat V[8][3] =
@@ -418,20 +417,15 @@ void renderScene() {
     DrawDoor();
     glPopMatrix();
 
-
-
     glPushMatrix();
     glColor3f(1.0, 0.0, 0.0);
-    //glTranslatef(0.5, 0.0, 3.0);
     DrawBicycle();
     glPopMatrix();
-
 
     glFlush();
     glutSwapBuffers();
 }
 
-// Keyboard callback function
 void handleKeypress(unsigned char key, int x, int y) {
     switch (key) {
         case 'a': // Move camera left
@@ -452,37 +446,60 @@ void handleKeypress(unsigned char key, int x, int y) {
         case 'e': // Move camera forward
             cameraZ += 0.1f;
             break;
-        case 'o':
+        case 'o': // open door
             isOpen = true;
             break;
-        case 'O':
+        case 'O': // open windows
             isOpenW = true;
             break;
-        case 'c':
+        case 'c': // close door
             isOpen = false;
             break;
-        case 'C':
+        case 'C': // close windows
             isOpenW = false;
             break;
-        case 'f': // move bicycle forward
-            Forward = true;
-            bicyclePosX += 0.1f;
+        case 'f': // go forward
+            bicyclePosX +=0.1f;
+            radius +=0.1;
+            change = true;
             break;
-        case 'b': // move bicycle backward
-            Backward = true;
-            bicyclePosX -= 0.1f;
+        case 'b': // go backward
+            bicyclePosX -= 0.1;
+            radius -= 0.1;
+            change = true;
             break;
-        case 'r':
-            rottate = true;
+        case 'r': // Rotate right wheel
+            rightWheelAngle += 15.0f; // Increase the angle by 20 degrees
             break;
-        case 'l':
-            rottate = false;
-            angle = 0.0;
-            break;
+        case 'l': // Rotate left wheel
+            leftWheelAngle += 15.0f; // Increase the angle by a suitable amount
         default:
             break;
     }
     glutPostRedisplay();
+}
+
+void handleMouseClick(int button, int state, int x, int y) {
+    if (button == GLUT_LEFT_BUTTON) {
+        if (state == GLUT_DOWN) {
+            isLeftButtonPressed = true;
+            isRightButtonPressed = false;
+            isRotateBike = true;
+        }
+        else if (state == GLUT_UP) {
+            isLeftButtonPressed = false;
+        }
+    }
+    else if ( button == GLUT_RIGHT_BUTTON){
+        if (state == GLUT_DOWN) {
+            isRightButtonPressed = true;
+            isLeftButtonPressed = false;
+            isRotateBike = false;
+        }
+        else if (state == GLUT_UP) {
+            isRightButtonPressed = false;
+        }
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -496,7 +513,8 @@ int main(int argc, char *argv[]) {
     glutReshapeFunc(changeSize);
     glutIdleFunc(renderScene);
     glutTimerFunc(10,update, 0);
-    glutKeyboardFunc(handleKeypress); // Register keyboard callback
+    glutKeyboardFunc(handleKeypress);
+    glutMouseFunc(handleMouseClick);
     glEnable(GL_DEPTH_TEST);
     glutMainLoop();
     return 0;
