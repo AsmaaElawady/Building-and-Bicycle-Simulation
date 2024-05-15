@@ -4,24 +4,15 @@
 
 using namespace std;
 // g++ main.cpp -lfreeglut -lopengl32 -lglu32 -lgdi32
-float cameraX = 0.0f, cameraY = 0.0f, cameraZ = 5.0f;
-bool isOpen = false, change = false;
-bool isOpenW = false;
-bool isRotateBike = false;
-bool changed = false;
-float radius = 2.5;
-float angle = 0.0;
-float bicyclePosX = 0.0f;
-float bicyclePosY = 0.0f;
-float bicyclePosZ = 1.3f;
+GLfloat cameraX = 0.0f, cameraY = 0.0f, cameraZ = 5.0f;
+bool isOpen = false, isOpenW = false;
+bool isRotateBike = false, isMoveBike = false;
+GLfloat angle = 0.0f;
+GLfloat xChange = 0.0f;
+float leftWheelAngle = 0.0f;
+float rightWheelAngle = 0.0f;
 bool isLeftButtonPressed = false, isRightButtonPressed = false;
 
-
-// Define variables to store the rotation angles of the wheels
-float rightWheelAngle = 0.0f;
-float leftWheelAngle = 0.0f;
-
-#define  PI   3.14159
 
 void changeSize(int w, int h) {
     if (h == 0)
@@ -44,11 +35,11 @@ void DrawQuad(GLfloat A[], GLfloat B[], GLfloat C[], GLfloat D[]) {
 }
 
 void DrawDoor() {
-    glDisable(GL_DEPTH_TEST);
-    GLfloat PP1[] = {0.15, -0.8, 0.5};  // right down
-    GLfloat PP2[] = {-0.15, -0.8, 0.5}; // left down
-    GLfloat PP3[] = {-0.15, -0.3, 0.5};  // left up
-    GLfloat PP4[] = {0.15, -0.3, 0.5};   // right up
+    glEnable(GL_DEPTH_TEST);
+    GLfloat PP1[] = {0.15, -0.8, 0.501};  // right down
+    GLfloat PP2[] = {-0.15, -0.8, 0.501}; // left down
+    GLfloat PP3[] = {-0.15, -0.3, 0.501};  // left up
+    GLfloat PP4[] = {0.15, -0.3, 0.501};   // right up
     glColor3f(0.45, 0.35, 0.25);
     DrawQuad(PP1, PP2, PP3, PP4);
 
@@ -61,93 +52,91 @@ void DrawDoor() {
     }
     glColor3f(0.35, 0.25, 0.15);
     // front side E F G H
-    GLfloat FP1[] = {0.15, -0.8, 0.5};  // right down
-    GLfloat FP2[] = {-0.15, -0.8, 0.5}; // left down
-    GLfloat FP3[] = {-0.15, -0.3, 0.5}; // left up
-    GLfloat FP4[] = {0.15, -0.3, 0.5}; // right up
+    GLfloat FP1[] = {0.15, -0.8, 0.52};  // right down
+    GLfloat FP2[] = {-0.15, -0.8, 0.52}; // left down
+    GLfloat FP3[] = {-0.15, -0.3, 0.52}; // left up
+    GLfloat FP4[] = {0.15, -0.3, 0.52}; // right up
     DrawQuad(FP1, FP2, FP3, FP4);
     // back side A B C D
-    GLfloat BP1[] = {0.15, -0.8, 0.47}; // right down
-    GLfloat BP2[] = {-0.15, -0.8, 0.47}; // left down
-    GLfloat BP3[] = {-0.15, -0.3, 0.47}; // left up
-    GLfloat BP4[] = {0.15, -0.3, 0.47}; // right up
+    GLfloat BP1[] = {0.15, -0.8, 0.502}; // right down
+    GLfloat BP2[] = {-0.15, -0.8, 0.502}; // left down
+    GLfloat BP3[] = {-0.15, -0.3, 0.502}; // left up
+    GLfloat BP4[] = {0.15, -0.3, 0.502}; // right up
     DrawQuad(BP1, BP2, BP3, BP4);
     // down side A B F E
-    GLfloat DP1[] = {0.15, -0.8, 0.47};  // right down
-    GLfloat DP2[] = {-0.15, -0.8, 0.47}; // left down
-    GLfloat DP3[] = {-0.15, -0.8, 0.5}; // left up
-    GLfloat DP4[] = {0.15, -0.8, 0.5}; // right up
+    GLfloat DP1[] = {0.15, -0.8, 0.502};  // right down
+    GLfloat DP2[] = {-0.15, -0.8, 0.502}; // left down
+    GLfloat DP3[] = {-0.15, -0.8, 0.52}; // left up
+    GLfloat DP4[] = {0.15, -0.8, 0.52}; // right up
     DrawQuad(DP1, DP2, DP3, DP4);
     // up side D C G H
-    GLfloat UP1[] = {0.15, -0.3, 0.47};  // right down
-    GLfloat UP2[] = {-0.15, -0.3, 0.47}; // left down
-    GLfloat UP3[] = {-0.15, -0.3, 0.5}; // left up
-    GLfloat UP4[] = {0.15, -0.3, 0.5}; // right up
+    GLfloat UP1[] = {0.15, -0.3, 0.502};  // right down
+    GLfloat UP2[] = {-0.15, -0.3, 0.502}; // left down
+    GLfloat UP3[] = {-0.15, -0.3, 0.52}; // left up
+    GLfloat UP4[] = {0.15, -0.3, 0.52}; // right up
     DrawQuad(UP1, UP2, UP3, UP4);
     // right side D A E H
-    GLfloat LP1[] = {0.15, -0.3, 0.47};  // right down
-    GLfloat LP2[] = {0.15, -0.8, 0.47}; // left down
-    GLfloat LP3[] = {0.15, -0.8, 0.5}; // left up
-    GLfloat LP4[] = {0.15, -0.3, 0.5}; // right up
+    GLfloat LP1[] = {0.15, -0.3, 0.502};  // right down
+    GLfloat LP2[] = {0.15, -0.8, 0.502}; // left down
+    GLfloat LP3[] = {0.15, -0.8, 0.52}; // left up
+    GLfloat LP4[] = {0.15, -0.3, 0.52}; // right up
     glColor3f(0.35, 0.25, 0.15);
     DrawQuad(LP1, LP2, LP3, LP4);
 
     // left side B C G F
-    GLfloat RP1[] = {-0.15, -0.8, 0.47}; // right down
-    GLfloat RP2[] = {-0.15, -0.3, 0.47}; // left down
-    GLfloat RP3[] = {-0.15, -0.3, 0.5}; // left up
-    GLfloat RP4[] = {-0.15, -0.8, 0.5}; // right up
+    GLfloat RP1[] = {-0.15, -0.8, 0.502}; // right down
+    GLfloat RP2[] = {-0.15, -0.3, 0.502}; // left down
+    GLfloat RP3[] = {-0.15, -0.3, 0.52}; // left up
+    GLfloat RP4[] = {-0.15, -0.8, 0.52}; // right up
     DrawQuad(RP1, RP2, RP3, RP4);
-
-    glEnable(GL_DEPTH_TEST);
 }
 
 pair<GLfloat, GLfloat> getF(char x, int w) {
     if (x == 'r' && (w == 1 || w == 3))
-        return {-0.15f, 0.8f};
+        return {-0.169f, 0.835f};
     if (x == 'r' && (w == 2 || w == 4))
         return {-0.6f, 0.4f};
     if (x == 'l' && (w == 2 || w == 4))
-        return {-0.82f, 0.33f};
+        return {-0.82f, 0.28f};
     if (x == 'l' && (w == 1 || w == 3))
-        return {-0.35f, 0.75f};
+        return {-0.388f, 0.72f};
 
     return {0.0f, 0.0f};
 }
 
 void DrawHalf(GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[], char half, int nWin) {
-
+    glEnable(GL_DEPTH_TEST);
     if (isOpenW) {
         pair<GLfloat, GLfloat> ret = getF(half, nWin);
         glTranslatef(ret.first, 0.0f, ret.second);
-        glRotatef(95.0f, 0.0f, 1.0f, 0.0f);
+        glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
         glutPostRedisplay();
     }
     // back
-    GLfloat B1[] = {V1[0], V1[1], static_cast<GLfloat>(V1[2] - 0.03)};
-    GLfloat B2[] = {V2[0], V2[1], static_cast<GLfloat>(V2[2] - 0.03)};
-    GLfloat B3[] = {V3[0], V3[1], static_cast<GLfloat>(V3[2] - 0.03)};
-    GLfloat B4[] = {V4[0], V4[1], static_cast<GLfloat>(V4[2] - 0.03)};
+    GLfloat B1[] = {V1[0], V1[1], static_cast<GLfloat>(V1[2] - 0.02)};
+    GLfloat B2[] = {V2[0], V2[1], static_cast<GLfloat>(V2[2] - 0.02)};
+    GLfloat B3[] = {V3[0], V3[1], static_cast<GLfloat>(V3[2] - 0.02)};
+    GLfloat B4[] = {V4[0], V4[1], static_cast<GLfloat>(V4[2] - 0.02)};
     // right
-    GLfloat R1[] = {V1[0], V1[1], static_cast<GLfloat>(V1[2] - 0.03)};
+    GLfloat R1[] = {V1[0], V1[1], static_cast<GLfloat>(V1[2] - 0.02)};
     GLfloat R2[] = {V1[0], V1[1], V1[2]};
     GLfloat R3[] = {V4[0], V4[1], V4[2]};
-    GLfloat R4[] = {V4[0], V4[1], static_cast<GLfloat>(V4[2] - 0.03)};
+    GLfloat R4[] = {V4[0], V4[1], static_cast<GLfloat>(V4[2] - 0.02)};
     // left
-    GLfloat L1[] = {V2[0], V2[1], static_cast<GLfloat>(V2[2] - 0.03)};
+    GLfloat L1[] = {V2[0], V2[1], static_cast<GLfloat>(V2[2] - 0.02)};
     GLfloat L2[] = {V2[0], V2[1], V2[2]};
     GLfloat L3[] = {V3[0], V3[1], V3[2]};
-    GLfloat L4[] = {V3[0], V3[1], static_cast<GLfloat>(V3[2] - 0.03)};
+    GLfloat L4[] = {V3[0], V3[1], static_cast<GLfloat>(V3[2] - 0.02)};
     // up
     GLfloat U1[] = {V4[0], V4[1], V4[2]};
     GLfloat U2[] = {V3[0], V3[1], V3[2]};
-    GLfloat U3[] = {V3[0], V3[1], static_cast<GLfloat>(V3[2] - 0.03)};
-    GLfloat U4[] = {V4[0], V4[1], static_cast<GLfloat>(V4[2] - 0.03)};
+    GLfloat U3[] = {V3[0], V3[1], static_cast<GLfloat>(V3[2] - 0.02)};
+    GLfloat U4[] = {V4[0], V4[1], static_cast<GLfloat>(V4[2] - 0.02)};
     // down
-    GLfloat D1[] = {V1[0], V1[1], static_cast<GLfloat>(V1[2] - 0.03)};
+    GLfloat D1[] = {V1[0], V1[1], static_cast<GLfloat>(V1[2] - 0.02)};
     GLfloat D2[] = {V2[0], V2[1], V2[2]};
-    GLfloat D3[] = {V2[0], V2[1], static_cast<GLfloat>(V2[2] - 0.03)};
-    GLfloat D4[] = {V1[0], V1[1], static_cast<GLfloat>(V1[2] - 0.03)};
+    GLfloat D3[] = {V2[0], V2[1], static_cast<GLfloat>(V2[2] - 0.02)};
+    GLfloat D4[] = {V1[0], V1[1], static_cast<GLfloat>(V1[2] - 0.02)};
 
     glColor3f(0.35, 0.25, 0.15);
     DrawQuad(L1, L2, L3, L4);
@@ -159,7 +148,7 @@ void DrawHalf(GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[], char half,
 }
 
 void DrawWindow(GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[], float half, int nWin) {
-    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
     // right half
     GLfloat R2[] = {half, V2[1], V2[2]};
     GLfloat R3[] = {half, V3[1], V3[2]};
@@ -170,32 +159,32 @@ void DrawWindow(GLfloat V1[], GLfloat V2[], GLfloat V3[], GLfloat V4[], float ha
     // left half
     GLfloat R1[] = {half, V1[1], V1[2]};
     GLfloat R4[] = {half, V4[1], V4[2]};
+    glPushMatrix();
     DrawHalf(R1, V2, V3, R4, 'l', nWin);
-    glEnable(GL_DEPTH_TEST);
+    glPopMatrix();
 }
 
-void DrawWindowBackground() {
-    glDisable(GL_DEPTH_TEST);
+void DrawWindowBackground(){
+    glEnable(GL_DEPTH_TEST);
+    GLfloat bw1[] = {0.33, -0.05, 0.501};  // right down
+    GLfloat bw2[] = {0.1, -0.05, 0.501}; // left down
+    GLfloat bw3[] = {0.1, 0.1, 0.501}; // left up
+    GLfloat bw4[] = {0.33, 0.1, 0.501}; // right up
 
-    GLfloat bw1[] = {0.33, -0.05, 0.5};  // right down
-    GLfloat bw2[] = {0.1, -0.05, 0.5}; // left down
-    GLfloat bw3[] = {0.1, 0.1, 0.5}; // left up
-    GLfloat bw4[] = {0.33, 0.1, 0.5}; // right up
+    GLfloat bx1[] = {-0.33, -0.05, 0.501};  // right down
+    GLfloat bx2[] = {-0.1, -0.05, 0.501}; // left down
+    GLfloat bx3[] = {-0.1, 0.1, 0.501}; // left up
+    GLfloat bx4[] = {-0.33, 0.1, 0.501}; // right up
 
-    GLfloat bx1[] = {-0.33, -0.05, 0.5};  // right down
-    GLfloat bx2[] = {-0.1, -0.05, 0.5}; // left down
-    GLfloat bx3[] = {-0.1, 0.1, 0.5}; // left up
-    GLfloat bx4[] = {-0.33, 0.1, 0.5}; // right up
+    GLfloat by1[] = {0.33, 0.4, 0.501};  // right down
+    GLfloat by2[] = {0.1, 0.4, 0.501}; // left down
+    GLfloat by3[] = {0.1, 0.55, 0.501}; // left up
+    GLfloat by4[] = {0.33, 0.55, 0.501}; // right up
 
-    GLfloat by1[] = {0.33, 0.4, 0.5};  // right down
-    GLfloat by2[] = {0.1, 0.4, 0.5}; // left down
-    GLfloat by3[] = {0.1, 0.55, 0.5}; // left up
-    GLfloat by4[] = {0.33, 0.55, 0.5}; // right up
-
-    GLfloat bz1[] = {-0.33, 0.4, 0.5};  // right down
-    GLfloat bz2[] = {-0.1, 0.4, 0.5}; // left down
-    GLfloat bz3[] = {-0.1, 0.55, 0.5}; // left up
-    GLfloat bz4[] = {-0.33, 0.55, 0.5}; // right up
+    GLfloat bz1[] = {-0.33, 0.4, 0.501};  // right down
+    GLfloat bz2[] = {-0.1, 0.4, 0.501}; // left down
+    GLfloat bz3[] = {-0.1, 0.55, 0.501}; // left up
+    GLfloat bz4[] = {-0.33, 0.55, 0.501}; // right up
 
     glColor3f(0.45, 0.35, 0.25);
     DrawQuad(bw1, bw2, bw3, bw4);
@@ -205,11 +194,11 @@ void DrawWindowBackground() {
     DrawQuad(by1, by2, by3, by4);
     glColor3f(0.45, 0.35, 0.25);
     DrawQuad(bz1, bz2, bz3, bz4);
-    glEnable(GL_DEPTH_TEST);
 }
 
 void DrawBuilding(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[],
                   GLfloat V4[], GLfloat V5[], GLfloat V6[], GLfloat V7[]) {
+    glEnable(GL_DEPTH_TEST);
     GLfloat V8[] = {V0[0], static_cast<GLfloat>(V0[1] - 0.1), V0[2]};
     GLfloat V9[] = {V1[0], static_cast<GLfloat>(V1[1] - 0.1), V1[2]};
     GLfloat V10[] = {V5[0], static_cast<GLfloat>(V5[1] - 0.1), V5[2]};
@@ -220,48 +209,45 @@ void DrawBuilding(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[],
     DrawQuad(V4, V5, V6, V7); // back
     DrawQuad(V0, V3, V7, V4); // left
     DrawQuad(V1, V2, V6, V5); // right
-    glColor3f(0.3, 0.3, 0.3);
+    glColor3f(0.35, 0.25, 0.15);
     DrawQuad(V8, V9, V10, V11); // Lower roof
 
     // the divider between the two floors
-    GLfloat FF1[] = {0.5, 0.255, 0.5};  // right down
-    GLfloat FF2[] = {-0.5, 0.255, 0.5}; // left down
-    GLfloat FF3[] = {-0.5, 0.3, 0.5}; // left up
-    GLfloat FF4[] = {0.5, 0.3, 0.5}; // right up
-    glDisable(GL_DEPTH_TEST);
-    glColor3f(0.3, 0.3, 0.3);
-    DrawQuad(FF1, FF2, FF3, FF4);
-    glEnable(GL_DEPTH_TEST);
+    glColor3f(0.35, 0.25, 0.15);
+    GLfloat F1[] = {0.5, 0.255, 0.501};  // right down
+    GLfloat F2[] = {-0.5, 0.255, 0.501}; // left down
+    GLfloat F3[] = {-0.5, 0.3, 0.501}; // left up
+    GLfloat F4[] = {0.5, 0.3, 0.501}; // right up
+    DrawQuad(F1, F2, F3, F4);
+    GLfloat R1[] = {0.501, 0.255, -0.501}; // right divider strip
+    GLfloat R2[] = {0.501, 0.255, 0.501};
+    GLfloat R3[] = {0.501, 0.3, 0.501};
+    GLfloat R4[] = {0.501, 0.3, -0.501};
+    DrawQuad(R1, R2, R3, R4);
+    GLfloat L1[] = {-0.501, 0.255, -0.501}; // left divider strip
+    GLfloat L2[] = {-0.501, 0.255, 0.501};
+    GLfloat L3[] = {-0.501, 0.3, 0.501};
+    GLfloat L4[] = {-0.501, 0.3, -0.501};
+    DrawQuad(L1, L2, L3, L4);
+    GLfloat B1[] = {0.5, 0.255, -0.501}; // back divider strip
+    GLfloat B2[] = {-0.5, 0.255, -0.501};
+    GLfloat B3[] = {-0.5, 0.3, -0.501};
+    GLfloat B4[] = {0.5, 0.3, -0.501};
+    DrawQuad(B1, B2, B3, B4);
 }
 
 void bicycle() {
-//    glPushMatrix(); // Right Wheel
-//    glColor3f(0, 0, 0);
-//    glTranslated(0.23, -0.7, 1.3);
-//    glRotated(angle, 0, 0, 1);
-//    glutSolidTorus(0.02, 0.08, 20, 20);
-//    glPopMatrix();
-//
-//    glPushMatrix(); // Left Wheel
-//    glColor3f(0, 0, 0);
-//    glTranslated(-0.22, -0.7, 1.3);
-//    glRotated(angle, 0, 0, 1);
-//    glutSolidTorus(0.02, 0.08, 20, 20);
-//    glPopMatrix();
-
     glPushMatrix(); // Right Wheel
     glColor3f(0, 0, 0);
     glTranslated(0.23, -0.7, 1.3);
-//    glRotated(angle, 0, 0, 1); // Rotate the wheel along with the bicycle
-    glRotated(rightWheelAngle, 0, 1, 0); // Rotate the right wheel
+    glRotated(rightWheelAngle, 0, 1, 0);
     glutSolidTorus(0.02, 0.08, 20, 20);
     glPopMatrix();
 
     glPushMatrix(); // Left Wheel
     glColor3f(0, 0, 0);
     glTranslated(-0.22, -0.7, 1.3);
-//    glRotated(angle, 0, 0, 1); // Rotate the wheel along with the bicycle
-    glRotated(leftWheelAngle, 0, 1, 0); // Rotate the left wheel
+    glRotated(leftWheelAngle, 0, 1, 0);
     glutSolidTorus(0.02, 0.08, 20, 20);
     glPopMatrix();
 
@@ -321,31 +307,67 @@ void bicycle() {
     glPopMatrix();
 }
 
-void update(int value) {
+void تما(int value) {
     if (isRotateBike) {
-        angle += 1.0;
-        if (angle >= 360) {
-            angle -= 360;
+        angle += 1.0; // Decrease the angle to rotate clockwise
+        if (angle < 360) {
+            angle -= 360; // Keep angle within [0, 360] range
         }
-        float radians = angle * (PI / 180); // Convert angle to radians
-        bicyclePosX = radius * cos(radians);
-        bicyclePosY = radius * sin(radians);
+        glutPostRedisplay(); // Request redisplay to update the scene
     }
-    glutPostRedisplay();
-    glutTimerFunc(16, update, 0);
+
+    glutTimerFunc(30,update, 0); // Start the update loop// 60 frames per second
 }
 
 void DrawBicycle() {
+    // Translate the bicycle to the center of the building
     glPushMatrix();
-    if(change){
-        change = false;
-        glTranslatef(bicyclePosX, 0.0, bicyclePosY); // Translate to the correct position
-    }
-    glRotatef(angle, 0.0f, 1.0f, 0.0f); // Rotate around the z-axis
+
+    // Rotate the bicycle around the y-axis
+    glRotatef(angle, 0.0f,  1.0f, 0.0f);
+    glTranslatef( 0.0f,0.0f, xChange);
+    // Draw the bicycle
     bicycle();
     glPopMatrix();
 }
 
+void DrawStreetLight(){
+    glPushMatrix(); // the pole
+    glColor3f(0, 0, 0);
+    glTranslated(0.6, -0.2, 0);
+    glScaled(0.06, 1.2, 0.04);
+    glutSolidCube(1);
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+
+    glPushMatrix();// lights holder
+    glColor3f(0, 0, 0);
+    glTranslated(0.6, 0.4, 0);
+    glScaled(0.06, 0, 0.55);
+    glutSolidCube(1);
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+
+    glPushMatrix();// the right light
+    glColor3f(0.9f, 0.9f, 0.9f);
+    glTranslated(0.6, 0.4, -0.15);
+    glScaled(0.04, 0.02, 0.15);
+    glutSolidCube(1);
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+
+    glPushMatrix();// the left light
+    glColor3f(0.9f, 0.9f, 0.9f);
+    glTranslated(0.6, 0.40, 0.17);
+    glScaled(0.04, 0.02, 0.15);
+    glutSolidCube(1);
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+};
 
 void renderScene() {
     GLfloat V[8][3] =
@@ -381,34 +403,34 @@ void renderScene() {
     DrawBuilding(V[0], V[1], V[2], V[3], V[4], V[5], V[6], V[7]);
     DrawWindowBackground();
     // Floor 1 right window
-    GLfloat FR1[] = {0.33, -0.05, 0.5}; // right down
-    GLfloat FR2[] = {0.1, -0.05, 0.5}; // left down
-    GLfloat FR3[] = {0.1, 0.1, 0.5}; // left up
-    GLfloat FR4[] = {0.33, 0.1, 0.5}; // right up
+    GLfloat FR1[] = {0.33, -0.05, 0.513}; // right down
+    GLfloat FR2[] = {0.1, -0.05, 0.513}; // left down
+    GLfloat FR3[] = {0.1, 0.1, 0.513}; // left up
+    GLfloat FR4[] = {0.33, 0.1, 0.513}; // right up
     glPushMatrix();
     DrawWindow(FR1, FR2, FR3, FR4, 0.22, 1);
     glPopMatrix();
     // Floor 1 left window
-    GLfloat FL2[] = {-0.33, -0.05, 0.5}; // right down
-    GLfloat FL1[] = {-0.1, -0.05, 0.5}; // left down
-    GLfloat FL4[] = {-0.1, 0.1, 0.5}; // left up
-    GLfloat FL3[] = {-0.33, 0.1, 0.5}; // right up
+    GLfloat FL2[] = {-0.33, -0.05, 0.513}; // right down
+    GLfloat FL1[] = {-0.1, -0.05, 0.513}; // left down
+    GLfloat FL4[] = {-0.1, 0.1, 0.513}; // left up
+    GLfloat FL3[] = {-0.33, 0.1, 0.513}; // right up
     glPushMatrix();
     DrawWindow(FL1, FL2, FL3, FL4, -0.22, 2);
     glPopMatrix();
     // Floor 2 right window
-    GLfloat SR1[] = {0.33, 0.4, 0.5};  // right down
-    GLfloat SR2[] = {0.1, 0.4, 0.5}; // left down
-    GLfloat SR3[] = {0.1, 0.55, 0.5}; // left up
-    GLfloat SR4[] = {0.33, 0.55, 0.5}; // right up
+    GLfloat SR1[] = {0.33, 0.4, 0.513};  // right down
+    GLfloat SR2[] = {0.1, 0.4, 0.513}; // left down
+    GLfloat SR3[] = {0.1, 0.55, 0.513}; // left up
+    GLfloat SR4[] = {0.33, 0.55, 0.513}; // right up
     glPushMatrix();
     DrawWindow(SR1, SR2, SR3, SR4, 0.22, 3);
     glPopMatrix();
     // Floor 2 left window
-    GLfloat SL1[] = {-0.1, 0.4, 0.5};  // right down
-    GLfloat SL2[] = {-0.33, 0.4, 0.5}; // left down
-    GLfloat SL3[] = {-0.33, 0.55, 0.5}; // left up
-    GLfloat SL4[] = {-0.1, 0.55, 0.5}; // right up
+    GLfloat SL1[] = {-0.1, 0.4, 0.513};  // right down
+    GLfloat SL2[] = {-0.33, 0.4, 0.513}; // left down
+    GLfloat SL3[] = {-0.33, 0.55, 0.513}; // left up
+    GLfloat SL4[] = {-0.1, 0.55, 0.513}; // right up
     glPushMatrix();
     DrawWindow(SL1, SL2, SL3, SL4, -0.22, 4);
     glPopMatrix();
@@ -418,8 +440,12 @@ void renderScene() {
     glPopMatrix();
 
     glPushMatrix();
-    glColor3f(1.0, 0.0, 0.0);
     DrawBicycle();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.1f, 0.0f, 0.6f);
+    DrawStreetLight();
     glPopMatrix();
 
     glFlush();
@@ -459,20 +485,21 @@ void handleKeypress(unsigned char key, int x, int y) {
             isOpenW = false;
             break;
         case 'f': // go forward
-            bicyclePosX +=0.1f;
-            radius +=0.1;
-            change = true;
+            xChange+= 0.1;
+            isMoveBike = true;
             break;
         case 'b': // go backward
-            bicyclePosX -= 0.1;
-            radius -= 0.1;
-            change = true;
+            xChange -= 0.1;
+            isMoveBike = true;
             break;
-        case 'r': // Rotate right wheel
-            rightWheelAngle += 15.0f; // Increase the angle by 20 degrees
+        case 'r': // rotate right wheel
+            rightWheelAngle = 15.0;
             break;
-        case 'l': // Rotate left wheel
-            leftWheelAngle += 15.0f; // Increase the angle by a suitable amount
+        case 'l': // rotate left wheel
+            leftWheelAngle = 15.0;
+            break;
+        case 'p':
+            isRotateBike = false;
         default:
             break;
     }
@@ -508,7 +535,7 @@ int main(int argc, char *argv[]) {
     glutInitWindowSize(800, 600);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutCreateWindow("CG Project");
-    glClearColor(0.678f, 0.847f, 0.902f, 1.0f);
+    glClearColor(0.678f, 0.847f, 0.0f, 1.0f);
     glutDisplayFunc(renderScene);
     glutReshapeFunc(changeSize);
     glutIdleFunc(renderScene);
