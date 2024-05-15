@@ -379,7 +379,7 @@ void update(int value) {
         glutPostRedisplay(); // Request redisplay to update the scene
     }
 
-    glutTimerFunc(30,update, 0); // Start the update loop// 60 frames per second
+    glutTimerFunc(7,update, 0); // Start the update loop// 60 frames per second
 }
 
 void DrawBicycle() {
@@ -562,8 +562,6 @@ void handleKeypress(unsigned char key, int x, int y) {
         case 'l': // rotate left wheel
             leftWheelAngle = 15.0;
             break;
-        case 'p':
-            isRotateBike = false;
         default:
             break;
     }
