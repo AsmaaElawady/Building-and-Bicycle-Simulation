@@ -235,7 +235,64 @@ void DrawBuilding(GLfloat V0[], GLfloat V1[], GLfloat V2[], GLfloat V3[],
     GLfloat B4[] = {0.5, 0.3, -0.501};
     DrawQuad(B1, B2, B3, B4);
 }
+void DrawPalestineFlag(){
+    glPushMatrix(); // the pole
+    glColor3f(0, 0, 0);
+    glTranslated(0.48f, -0.2f, 2.0f);
+    glScaled(0.01, 0.35, 0.01);
+    glutSolidCube(1);
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
 
+
+    glPushMatrix();// lights holder
+    glColor3f(0, 0, 0);
+    glTranslated(0.33f, -0.06f, 2.0f);
+    glScaled(0.3 ,0.06, 0);
+    glutSolidCube(1);
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+
+    glPushMatrix();// lights holder
+    glColor3f(1, 1, 1);
+    glTranslated(0.33f, -0.12f, 2.0f);
+    glScaled(0.3 ,0.06, 0);
+    glutSolidCube(1);
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+
+    glPushMatrix();// lights holder
+    glColor3f(0, 0.5, 0.03);
+    glTranslated(0.33f, -0.18f, 2.0f);
+    glScaled(0.3 ,0.06, 0);
+    glutSolidCube(1);
+    glColor3f(0, 0, 0);
+    glutWireCube(1);
+    glPopMatrix();
+
+    /// Draw the red triangle
+    glPushMatrix();
+    glColor3f(0.8, 0.2, 0.2); // Red color
+    glBegin(GL_TRIANGLES);
+    glVertex3f(0.48f, -0.03f, 2.01f); // Top vertex
+    glVertex3f(0.48f, -0.21f, 2.01f); // Bottom right vertex
+    glVertex3f(0.33f, -0.13f, 2.01f);
+    glEnd();
+    glPopMatrix();
+    glPushMatrix();
+    glColor3f(0.8, 0.2, 0.2); // Red color
+    glBegin(GL_TRIANGLES);
+    glVertex3f(0.48f, -0.03f, 1.99f); // Top vertex
+    glVertex3f(0.48f, -0.21f, 1.99f); // Bottom right vertex
+    glVertex3f(0.33f, -0.13f, 1.99f);
+    glEnd();
+    glPopMatrix();
+
+
+}
 void bicycle() {
     glPushMatrix(); // Right Wheel
     glColor3f(0, 0, 0);
@@ -305,9 +362,15 @@ void bicycle() {
     glColor3f(0, 0, 0);
     glutWireCube(1);
     glPopMatrix();
+
+    // the flag
+    glPushMatrix();
+    glTranslated(-0.6f, -0.1f, -0.7f);
+    DrawPalestineFlag();
+    glPopMatrix();
 }
 
-void تما(int value) {
+void update(int value) {
     if (isRotateBike) {
         angle += 1.0; // Decrease the angle to rotate clockwise
         if (angle < 360) {
@@ -316,7 +379,7 @@ void تما(int value) {
         glutPostRedisplay(); // Request redisplay to update the scene
     }
 
-    glutTimerFunc(30,update, 0); // Start the update loop// 60 frames per second
+    glutTimerFunc(7,update, 0); // Start the update loop// 60 frames per second
 }
 
 void DrawBicycle() {
@@ -329,6 +392,7 @@ void DrawBicycle() {
     // Draw the bicycle
     bicycle();
     glPopMatrix();
+
 }
 
 void DrawStreetLight(){
@@ -392,7 +456,7 @@ void renderScene() {
               0.0, 1.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glColor3f(0, 0.5, 0);
+    glColor3f(0.4, 0.4, 0.35);
     glBegin(GL_QUADS);
     glVertex3f(-5, -0.8, -5);
     glVertex3f(-5, -0.8, 5);
@@ -535,7 +599,7 @@ int main(int argc, char *argv[]) {
     glutInitWindowSize(800, 600);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutCreateWindow("CG Project");
-    glClearColor(0.678f, 0.847f, 0.0f, 1.0f);
+    glClearColor(0.5f, 0.7f, 0.0f, 1.0f);
     glutDisplayFunc(renderScene);
     glutReshapeFunc(changeSize);
     glutIdleFunc(renderScene);
