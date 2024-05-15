@@ -1,4 +1,4 @@
-#include <GL/glut.h>
+#include <GLUT/glut.h>
 #include <iostream>
 #include <cmath>
 
@@ -244,8 +244,8 @@ void DrawPalestineFlag(){
     glColor3f(0, 0, 0);
     glutWireCube(1);
     glPopMatrix();
-
-
+    
+    
     glPushMatrix();// lights holder
     glColor3f(0, 0, 0);
     glTranslated(0.33f, -0.06f, 2.0f);
@@ -254,7 +254,7 @@ void DrawPalestineFlag(){
     glColor3f(0, 0, 0);
     glutWireCube(1);
     glPopMatrix();
-
+    
     glPushMatrix();// lights holder
     glColor3f(1, 1, 1);
     glTranslated(0.33f, -0.12f, 2.0f);
@@ -263,7 +263,7 @@ void DrawPalestineFlag(){
     glColor3f(0, 0, 0);
     glutWireCube(1);
     glPopMatrix();
-
+    
     glPushMatrix();// lights holder
     glColor3f(0, 0.5, 0.03);
     glTranslated(0.33f, -0.18f, 2.0f);
@@ -272,26 +272,26 @@ void DrawPalestineFlag(){
     glColor3f(0, 0, 0);
     glutWireCube(1);
     glPopMatrix();
-
+    
     /// Draw the red triangle
-    glPushMatrix();
-    glColor3f(0.8, 0.2, 0.2); // Red color
-    glBegin(GL_TRIANGLES);
-    glVertex3f(0.48f, -0.03f, 2.01f); // Top vertex
-    glVertex3f(0.48f, -0.21f, 2.01f); // Bottom right vertex
-    glVertex3f(0.33f, -0.13f, 2.01f);
-    glEnd();
-    glPopMatrix();
-    glPushMatrix();
-    glColor3f(0.8, 0.2, 0.2); // Red color
-    glBegin(GL_TRIANGLES);
-    glVertex3f(0.48f, -0.03f, 1.99f); // Top vertex
-    glVertex3f(0.48f, -0.21f, 1.99f); // Bottom right vertex
-    glVertex3f(0.33f, -0.13f, 1.99f);
-    glEnd();
-    glPopMatrix();
-
-
+        glPushMatrix();
+        glColor3f(0.8, 0.2, 0.2); // Red color
+        glBegin(GL_TRIANGLES);
+        glVertex3f(0.48f, -0.03f, 2.01f); // Top vertex
+        glVertex3f(0.48f, -0.21f, 2.01f); // Bottom right vertex
+        glVertex3f(0.33f, -0.13f, 2.01f);
+        glEnd();
+        glPopMatrix();
+        glPushMatrix();
+        glColor3f(0.8, 0.2, 0.2); // Red color
+        glBegin(GL_TRIANGLES);
+        glVertex3f(0.48f, -0.03f, 1.99f); // Top vertex
+        glVertex3f(0.48f, -0.21f, 1.99f); // Bottom right vertex
+        glVertex3f(0.33f, -0.13f, 1.99f);
+        glEnd();
+        glPopMatrix();
+    
+    
 }
 void bicycle() {
     glPushMatrix(); // Right Wheel
@@ -362,7 +362,7 @@ void bicycle() {
     glColor3f(0, 0, 0);
     glutWireCube(1);
     glPopMatrix();
-
+    
     // the flag
     glPushMatrix();
     glTranslated(-0.6f, -0.1f, -0.7f);
@@ -379,7 +379,7 @@ void update(int value) {
         glutPostRedisplay(); // Request redisplay to update the scene
     }
 
-    glutTimerFunc(7,update, 0); // Start the update loop// 60 frames per second
+    glutTimerFunc(30,update, 0); // Start the update loop// 60 frames per second
 }
 
 void DrawBicycle() {
@@ -392,7 +392,7 @@ void DrawBicycle() {
     // Draw the bicycle
     bicycle();
     glPopMatrix();
-
+    
 }
 
 void DrawStreetLight(){
