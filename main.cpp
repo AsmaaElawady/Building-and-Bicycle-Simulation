@@ -3,7 +3,6 @@
 #include <cmath>
 
 using namespace std;
-// g++ main.cpp -lfreeglut -lopengl32 -lglu32 -lgdi32
 GLfloat cameraX = 0.0f, cameraY = 0.0f, cameraZ = 5.0f;
 bool isOpen = false, isOpenW = false;
 bool isRotateBike = false, isMoveBike = false;
@@ -530,10 +529,10 @@ void handleKeypress(unsigned char key, int x, int y) {
         case 's': // Move camera down
             cameraY -= 0.1f;
             break;
-        case 'q': // Move camera backward
+        case 'q': // Move camera forward
             cameraZ -= 0.1f;
             break;
-        case 'e': // Move camera forward
+        case 'e': // Move camera backward
             cameraZ += 0.1f;
             break;
         case 'o': // open door
