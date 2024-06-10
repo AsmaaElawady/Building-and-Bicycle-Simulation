@@ -1,22 +1,53 @@
-# OpenGL_Project
-consists of :
+# Building and Bicycle Simulation Project
 
--  3D building of 2 floors, a roof, one door and four windows.
--  3D Bicycle.
+This project is a simple simulation using OpenGL that demonstrates a rotating bicycle and a building with interactive elements such as doors and windows. The code utilizes the FreeGLUT library to manage window creation, input handling, and rendering.
 
-to use the functionalties of the objects : 
-- Use key ‘o’ to open the door with suitable angle.
-- Use key ‘c’ to close the door with suitable angle.
-- Use key ‘O’ to open the windows with suitable angle.
-- Use key ‘C’ to close the windows with suitable angle.
+## Prerequisites
+Before running the program, ensure you have the following installed on your system:
+- GCC compiler
+- FreeGLUT library
+  
+## Project Description
+The project mainly consists of:
+- A building of 2 floors, 2 windows per floor, door, and a roof
+- A bicycle that rotates around the building with different radii in a circular road
 
+## Building and Running the Project
+- **Compile**: g++ main.cpp -lfreeglut -lopengl32 -lglu32 -lgdi32
+- **Execute**: a.exe
 
-- Use key ‘f’ to move the bicycle forward in X-axis direction.
-- Use key ‘b’ to move the bicycle backward in X-axis direction.
-- Use key ‘r’ to rotate right wheel with suitable angle.
-- Use key ‘l’ to rotate left wheel with suitable angle.
+## Features
+### Camera Control
+- cameraX, cameraY, cameraZ: Variables to control 3D scene
+### Door Control
+- isOpen: Boolean variable to control the state of the door (open or closed).
+### Window Control
+- isOpenW: Boolean to control the state of the windows (open or closed).
+### Bicycle Control
+- isRotateBike: Boolean to control the rotation of the bicycle.
+- angle: Variable to store the rotation angle of the bicycle.
+- xChange: Variable to store the horizontal translation of the bicycle.
+- leftWheelAngle, rightWheelAngle: Variables to store the rotation angles of the bicycle wheels.
+### Mouse Control
+- isLeftButtonPressed, isRightButtonPressed: Booleans to track mouse button states.
 
-- Use the mouse left button to enable animation so that the bicycle starts rotating around the building.
-- Use the mouse right button to disable animation.
-
+## Interaction
+- **Keyboard**:
+  - `a`: Move camera left
+  - `d`: Move camera right
+  - `w`: Move camera up
+  - `s`: Move camera down
+  - `q`: Move camera forward
+  - `e`: Move camera backward
+  - `o`: Open door
+  - `c`: Close door
+  - `O`: Open windows
+  - `C`: Close windows
+  - `f`: Move bicycle through positive x-axis
+  - `b`: Move bicycle through negative x-axis
+  - `r`: Rotate front wheel
+  - `l`: Rotate back wheel
+- **Mouse**:
+  - `Right click`: Stop rotating bicycle
+  - `Left click`: Start rotating bicycle
 
