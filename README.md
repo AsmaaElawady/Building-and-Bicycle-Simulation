@@ -18,18 +18,18 @@ The project mainly consists of:
 
 ## Features
 ### Camera Control
-- cameraX, cameraY, cameraZ: Variables to control 3D scene
+- **cameraX, cameraY, cameraZ**: Variables to control 3D scene
 ### Door Control
-- isOpen: Boolean variable to control the state of the door (open or closed).
+- **isOpen**: Boolean variable to control the state of the door (open or closed).
 ### Window Control
-- isOpenW: Boolean to control the state of the windows (open or closed).
+- **isOpenW**: Boolean to control the state of the windows (open or closed).
 ### Bicycle Control
-- isRotateBike: Boolean to control the rotation of the bicycle.
-- angle: Variable to store the rotation angle of the bicycle.
-- xChange: Variable to store the horizontal translation of the bicycle.
-- leftWheelAngle, rightWheelAngle: Variables to store the rotation angles of the bicycle wheels.
+- **isRotateBike**: Boolean to control the rotation of the bicycle.
+- **angle**: Variable to store the rotation angle of the bicycle.
+- **xChange**: Variable to store the horizontal translation of the bicycle.
+- **leftWheelAngle, rightWheelAngle**: Variables to store the rotation angles of the bicycle wheels.
 ### Mouse Control
-- isLeftButtonPressed, isRightButtonPressed: Booleans to track mouse button states.
+- **isLeftButtonPressed, isRightButtonPressed**: Booleans to track mouse button states.
 
 ## Interaction
 - **Keyboard**:
